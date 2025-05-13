@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bon anniversaire Elina</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- Party.js pour les confettis -->
+  <script src="https://cdn.jsdelivr.net/npm/party-js@latest/bundle/party.min.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Arial', sans-serif;
+      overflow: hidden;
+    }
+
+    /* --- Intro --- */
+    #intro {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
+      background-size: 400% 400%;
+      animation: gradient 10s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      z-index: 2000;
+      transition: opacity 1.5s ease;
+    }
+
+    @keyframes gradient {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    .intro-content {
+      text-align: center;
+    }
+
+    .intro-icon {
+      width: 120px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .intro-icon:hover {
+      animation: wiggle 0.5s ease infinite;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(5deg); }
+      75% { transform: rotate(-5deg); }
+    }
+
+    .opened {
+      animation: openEnvelope 1s ease forwards;
+    }
+
+    @keyframes openEnvelope {
+      0% { transform: rotate(0deg) scale(1); opacity: 1; }
+      100% { transform: rotateX(90deg) scale(0.5); opacity: 0; }
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      margin-top: 10px;
+      opacity: 0;
+      animation: fadeIn 2s ease 1s forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      display: none;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    /* --- Popup plein écran --- */
+  .popup-fullscreen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a6c1ee);
+    background-size: 400% 400%;
+    animation: gradient 10s ease infinite;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    opacity: 0;
+    animation: fadeInPopup 1s ease forwards;
+    padding: 20px;
+  }
+
+  .popup-fullscreen h1,
+  .popup-fullscreen p,
+  .popup-fullscreen ul,
+  .popup-fullscreen li {
+    color: white;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+  }
+
+
+    @keyframes fadeInPopup {
+      to { opacity: 1; }
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #e91e63;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .btn:hover {
+      background: #c2185b;
+    }
+  </style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div id="intro">
+  <div class="intro-content">
+    <img id="envelope" src="https://cdn-icons-png.flaticon.com/512/9678/9678640.png" alt="enveloppe romantique" class="intro-icon">
+    <h1>Bon anniversaire Elina</h1>
+    <p class="subtitle">Clique sur l’enveloppe pour découvrir ta surprise 💌</p>
+  </div>
+</div>
+
+<!-- CARTE -->
+<div id="map"></div>
+
+<!-- POPUP PLEIN ÉCRAN -->
+<div class="popup-fullscreen" id="popup">
+  <h1 id="giftTitle">🎁 Une surprise t'attend !</h1>
+  <p>Tu as gagné un moment inoubliable à deux 💕</p>
+  <ul style="list-style: none; padding: 0;">
+    <li>📍 Lieu : Zenith d'Auvergne - Cournon (vers Clermont-Ferrand)</li>
+    <li>📅 Date : 25 octobre 2025</li>
+    <li>⏰ Heure : 20h00</li>
+  </ul>
+  <div style="margin-top: 20px;">
+  <video controls width="auto" height="300px" id="myVideo">
+    <source src="./video.mp4" type="video/mp4" />
+  </video>
+  </div>
+</div>
+
+<script>
+  const intro = document.getElementById("intro");
+  const envelope = document.getElementById("envelope");
+  const mapContainer = document.getElementById("map");
+
+  envelope.addEventListener("click", () => {
+    envelope.classList.add("opened");
+
+    setTimeout(() => {
+      intro.style.opacity = 0;
+      setTimeout(() => {
+        intro.style.display = "none";
+        mapContainer.style.display = "block";
+        setTimeout(() => {
+          mapContainer.style.opacity = 1;
+          initMap();
+        }, 100);
+      }, 1000);
+    }, 1000);
+  });
+
+  function initMap() {
+    const map = L.map('map').setView([46.603354, 1.888334], 6); // vue France
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    setTimeout(() => {
+      map.flyTo([45.7772, 3.0870], 15, { duration: 5 });
+
+      setTimeout(() => {
+        const marker = L.marker([45.7772, 3.0870]).addTo(map);
+        marker.bindPopup(`
+          <b>❤️ Une surprise t'attend ici !</b><br/>
+          <button class="btn" onclick="showGift()">Découvrir mon cadeau</button>
+        `).openPopup();
+      }, 5000);
+    }, 1000);
+  }
+
+  function showGift() {
+    const popup = document.getElementById("popup");
+    const title = document.getElementById("giftTitle");
+    popup.style.display = "flex";
+    const vid = document.getElementById("myVideo");
+    vid.play()
+    for (let i = 0; i < 3; i++) {
+      setTimeout(() => {
+        party.confetti(title, {
+          count: 70,
+          spread: 70,
+          size: 1.5,
+          speed: 500,
+          gravity: 700
+        });
+      }, i * 700);
+    }
+  }
+</script>
+
+</body>
+</html>
