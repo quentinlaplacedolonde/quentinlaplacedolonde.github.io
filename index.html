@@ -149,8 +149,8 @@
 <div id="intro">
   <div class="intro-content">
     <img id="envelope" src="https://cdn-icons-png.flaticon.com/512/9678/9678640.png" alt="enveloppe romantique" class="intro-icon">
-    <h1>Bon anniversaire Elina</h1>
-    <p class="subtitle">Clique sur l’enveloppe pour découvrir ta surprise 💌</p>
+    <h1>Bon anniversaire Yann</h1>
+    <p class="subtitle">Clique sur l’enveloppe pour découvrir ta surprise</p>
   </div>
 </div>
 
@@ -160,11 +160,11 @@
 <!-- POPUP PLEIN ÉCRAN -->
 <div class="popup-fullscreen" id="popup">
   <h1 id="giftTitle">🎁 Une surprise t'attend !</h1>
-  <p>Tu as gagné un moment inoubliable à deux 💕</p>
+  <p>Tu as gagné un moment inoubliable à un 💕</p>
   <ul style="list-style: none; padding: 0;">
-    <li>📍 Lieu : Zenith d'Auvergne - Cournon (vers Clermont-Ferrand)</li>
-    <li>📅 Date : 25 octobre 2025</li>
-    <li>⏰ Heure : 20h00</li>
+    <li>📍 Lieu : Transbordeur - 3 Bd de Stalingrad, 69100 Villeurbanne</li>
+    <li>📅 Date : 02 mars 2026</li>
+    <li>⏰ Heure : 19h00</li>
   </ul>
   <div style="margin-top: 20px;">
   <video controls width="auto" height="300px" id="myVideo">
@@ -202,12 +202,12 @@
     }).addTo(map);
 
     setTimeout(() => {
-      map.flyTo([45.7772, 3.0870], 15, { duration: 5 });
+      map.flyTo([45.78421274022409, 4.860684034390227], 15, { duration: 5 });
 
       setTimeout(() => {
-        const marker = L.marker([45.7772, 3.0870]).addTo(map);
+        const marker = L.marker([45.78421274022409, 4.860684034390227]).addTo(map);
         marker.bindPopup(`
-          <b>❤️ Une surprise t'attend ici !</b><br/>
+          <b>Une surprise t'attend ici !</b><br/>
           <button class="btn" onclick="showGift()">Découvrir mon cadeau</button>
         `).openPopup();
       }, 5000);
